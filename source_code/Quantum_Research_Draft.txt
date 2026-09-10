@@ -1,0 +1,45 @@
+# Numerical Exploration of Quantum Tunneling and Bound States in Non-Standard Potentials: A Computational Study
+
+## Abstract
+This study explores the behavior of quantum particles in non-standard potentials through numerical simulations. A fully functional, dependency-free Schrödinger equation solver was developed in pure Python. The solver was verified against analytical models before being applied to study the effect of barrier geometry on quantum tunneling, energy splitting in double-well potentials, and anharmonic molecular vibrations using the Morse potential.
+
+## 1. Computational Methodology
+To numerically solve the time-independent Schrödinger equation, the continuous spatial domain was discretized into a uniform grid using the Finite Difference Method. The kinetic energy operator (the second spatial derivative) was approximated using a central difference scheme. 
+
+This transformation converted the differential equation into a tridiagonal Hamiltonian matrix eigenvalue problem. To ensure numerical stability and absolute precision without relying on external mathematical libraries (such as NumPy or SciPy), the eigenvalues were calculated using a bisection algorithm operating on the Sturm sequence properties of tridiagonal matrices. Corresponding wavefunctions were derived using inverse iteration.
+
+### Verification
+The solver's accuracy was verified against two textbook analytical solutions:
+1. **The Infinite Square Well (Particle in a Box):** Errors were strictly bounded below 0.04%.
+2. **The Quantum Harmonic Oscillator:** Errors remained below 0.04% for the lowest energy states.
+This high precision validated the computational model for use on complex, non-standard potentials lacking analytical solutions.
+
+## 2. The Impact of Barrier Geometry on Quantum Tunneling
+Standard introductory quantum mechanics primarily analyzes tunneling through rectangular barriers. This study systematically compared six barrier geometries (rectangular, Gaussian, triangular, parabolic, trapezoidal, and exponential) while keeping the absolute barrier height ($V_0$) and barrier width ($W$) strictly constant.
+
+**Key Findings:**
+* The geometric shape of the barrier drastically alters the quantum tunneling probability. 
+* The **exponential barrier** presented the least resistance, allowing up to **9,000,000 times (9 million times)** more tunneling than the rectangular barrier.
+* The **rectangular barrier** acts as an absolute ceiling of resistance because it maintains its maximum height across its entire width. Conversely, shapes like the Gaussian or parabolic barriers act as smooth hills, where the particle only experiences the maximum resistance at a single infinitesimal point.
+* The discrepancy between geometries amplifies exponentially as the barrier width increases or as the incident particle energy decreases.
+
+To mathematically quantify this, we defined the **Shape Factor (S)**. This factor measures the WKB (Wentzel-Kramers-Brillouin) approximation integral of a specific geometry against the baseline rectangular barrier, effectively providing a geometric correction coefficient for tunneling probabilities.
+
+## 3. Quantum Tunnel Splitting in a Double Well
+The solver was applied to a double-well potential to study quantum tunnel splitting—a phenomenon where a particle can tunnel between two adjacent potential valleys, causing the energy levels to split into closely spaced pairs.
+
+**Observations:**
+A high-resolution parameter sweep was conducted, systematically increasing the separation distance ($a$) between the two wells. 
+* At close proximity, the energy gap between the ground state and first excited state was pronounced ($\Delta E \approx 0.125$).
+* As the wells separated and the central barrier widened, tunneling was heavily suppressed. Consequently, the energy gap shrank exponentially down to $\Delta E \approx 0.00001$.
+This confirmed that the energy splitting is directly coupled to the tunneling probability; as tunneling approaches zero, the wells behave as two isolated, degenerate systems.
+
+## 4. Anharmonic Molecular Vibrations (Morse Potential)
+While the harmonic oscillator is a useful approximation, real chemical bonds dissociate when stretched too far. The solver was utilized to model the Morse Potential, a realistic representation of diatomic molecular vibrations.
+
+**Observations:**
+Unlike the harmonic oscillator, which features perfectly evenly spaced energy levels, the Morse potential demonstrated clear anharmonic behavior:
+* The energy gap between the ground state and the first excited state was relatively large ($\Delta E \approx 4.47$).
+* The gap between the first and second excited state decreased to $\Delta E \approx 3.47$.
+* The gap between the second and third excited state decreased further to $\Delta E \approx 2.47$.
+As the vibrational energy increases, the energy levels crowd progressively closer together. This perfectly simulates the physical reality of a chemical bond: as energy increases, the restoring force weakens until the energy levels blur into a continuum, resulting in molecular dissociation.

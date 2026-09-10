@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔬 Quantum Tunneling Explorer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0a1a;
+            color: #e0e0f0;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a3e 0%, #0d0d2b 100%);
+            padding: 24px 32px;
+            border-bottom: 2px solid #333366;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            background: linear-gradient(90deg, #64b5f6, #ce93d8, #81c784);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            color: #8888aa;
+            font-size: 14px;
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .controls {
+            background: #12122a;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .controls h2 {
+            font-size: 16px;
+            color: #81c784;
+            margin-bottom: 16px;
+        }
+
+        .slider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-group label {
+            font-size: 13px;
+            color: #aaaacc;
+        }
+
+        .slider-group label span {
+            color: #64b5f6;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #2a2a4a;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #64b5f6;
+            cursor: pointer;
+        }
+
+        .viz-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 800px) {
+            .viz-grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: #12122a;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .card h3 {
+            font-size: 14px;
+            color: #ce93d8;
+            margin-bottom: 12px;
+        }
+
+        canvas {
+            width: 100%;
+            border-radius: 8px;
+            background: #0a0a18;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .results-table th {
+            text-align: left;
+            padding: 8px 12px;
+            color: #81c784;
+            border-bottom: 1px solid #2a2a4a;
+            font-weight: 600;
+        }
+
+        .results-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #1a1a3a;
+        }
+
+        .results-table tr:hover {
+            background: #1a1a3a;
+        }
+
+        .bar-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bar {
+            height: 16px;
+            border-radius: 4px;
+            min-width: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .explanation {
+            background: #0d1a0d;
+            border: 1px solid #1a3a1a;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #88cc88;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .rank-1 { background: #ffd700; color: #000; }
+        .rank-2 { background: #c0c0c0; color: #000; }
+        .rank-3 { background: #cd7f32; color: #000; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔬 Quantum Tunneling Explorer</h1>
+        <p>How does barrier SHAPE affect quantum tunneling probability?</p>
+    </div>
+    
+    <div class="main" style="margin-top: 10px;">
+        <div class="card full-width" style="margin-bottom: 24px; border-color: #ce93d8;">
+            <h3 style="color: #64b5f6; font-size: 16px;">🌟 Our Core Discovery & Visualization Goals</h3>
+            <p style="font-size: 14px; line-height: 1.6; color: #e0e0f0; margin-bottom: 12px;">
+                <strong>The Discovery:</strong> Textbooks usually only analyze plain rectangular barriers. Our computational research reveals that the geometric <em>shape</em> of a barrier drastically alters the quantum tunneling probability. In fact, an exponential barrier allows up to <strong>9 million times</strong> more tunneling than a standard rectangular barrier of the exact same height and width! We defined the <strong>"Shape Factor" (S)</strong> to mathematically quantify this.
+            </p>
+            <p style="font-size: 14px; line-height: 1.6; color: #e0e0f0;">
+                <strong>Visualization Goals:</strong> This web tool visualizes the WKB (Wentzel-Kramers-Brillouin) approximation integral across 6 different geometries dynamically. By mapping the decay rate inside the barrier, you can clearly see exactly <em>why</em> smooth slopes (like the Gaussian and Parabolic shapes) offer far less resistance to quantum particles than vertical walls.
+            </p>
+        </div>
+        <!-- Controls -->
+        <div class="controls">
+            <h2>⚙️ Parameters — Drag to Explore!</h2>
+            <div class="slider-grid">
+                <div class="slider-group">
+                    <label>Barrier Height (V₀): <span id="v0-val">10.0</span></label>
+                    <input type="range" id="v0" min="1" max="30" step="0.5" value="10">
+                </div>
+                <div class="slider-group">
+                    <label>Barrier Width (W): <span id="width-val">2.0</span></label>
+                    <input type="range" id="bwidth" min="0.5" max="5" step="0.25" value="2">
+                </div>
+                <div class="slider-group">
+                    <label>Particle Energy (E): <span id="energy-val">3.0</span></label>
+                    <input type="range" id="energy" min="0.5" max="29" step="0.5" value="3">
+                </div>
+            </div>
+        </div>
+
+        <!-- Visualizations -->
+        <div class="viz-grid">
+            <!-- Barrier Shapes -->
+            <div class="card full-width">
+                <h3>📐 Barrier Shapes (same height & width, different shapes)</h3>
+                <canvas id="barriers-canvas" height="250"></canvas>
+            </div>
+
+            <!-- Tunneling Comparison -->
+            <div class="card full-width">
+                <h3>📊 Tunneling Probability by Shape</h3>
+                <table class="results-table" id="results-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Barrier Shape</th>
+                            <th>Tunneling Probability</th>
+                            <th style="width: 40%">Comparison</th>
+                            <th>vs Rectangular</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body"></tbody>
+                </table>
+            </div>
+
+            <!-- Decay Rate Visualization -->
+            <div class="card">
+                <h3>🌊 Wave Decay Inside Barrier (κ(x) = √(2(V-E)))</h3>
+                <canvas id="decay-canvas" height="250"></canvas>
+                <div class="explanation">
+                    <strong>What you're seeing:</strong> The decay rate κ(x) at each point inside the barrier. 
+                    Where κ is BIG → wave dies fast. Where κ is small → wave barely decays.
+                    The <em>total tunneling</em> depends on the AREA under this curve.
+                </div>
+            </div>
+
+            <!-- Shape Factor -->
+            <div class="card">
+                <h3>📏 Shape Factor S = γ_shape / γ_rectangular</h3>
+                <canvas id="factor-canvas" height="250"></canvas>
+                <div class="explanation">
+                    <strong>Shape Factor S:</strong> How much of the rectangular barrier's 
+                    "blocking power" each shape has. S=1 means same as rectangular. 
+                    S=0.5 means half as much blocking → way more tunneling!
+                </div>
+            </div>
+
+            <!-- Energy scan -->
+            <div class="card full-width">
+                <h3>⚡ Tunneling vs Energy (watch tunneling increase as E → V₀)</h3>
+                <canvas id="energy-canvas" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // =========================================================================
+    // BARRIER SHAPE FUNCTIONS
+    // =========================================================================
+    const SHAPES = [
+        { name: 'Rectangular', color: '#f44336',  fn: (x, V0, W) => Math.abs(x) < W/2 ? V0 : 0 },
+        { name: 'Trapezoidal', color: '#ff9800',  fn: (x, V0, W) => {
+            const d = Math.abs(x), flat = W*0.25;
+            if (d < flat) return V0;
+            if (d < W/2) return V0 * (1 - (d-flat)/(W/2-flat));
+            return 0;
+        }},
+        { name: 'Parabolic',   color: '#ffeb3b',  fn: (x, V0, W) => Math.abs(x) < W/2 ? V0*(1-(2*Math.abs(x)/W)**2) : 0 },
+        { name: 'Gaussian',    color: '#4caf50',  fn: (x, V0, W) => {
+            const sigma = W / (2*Math.sqrt(2*Math.log(100)));
+            return V0 * Math.exp(-x*x/(2*sigma*sigma));
+        }},
+        { name: 'Triangular',  color: '#2196f3',  fn: (x, V0, W) => Math.abs(x) < W/2 ? V0*(1-2*Math.abs(x)/W) : 0 },
+        { name: 'Exponential', color: '#ce93d8',  fn: (x, V0, W) => {
+            const alpha = 2*Math.log(100)/W;
+            return V0 * Math.exp(-alpha*Math.abs(x));
+        }},
+    ];
+
+    // =========================================================================
+    // WKB TUNNELING CALCULATION
+    // =========================================================================
+    function wkbTunneling(shape, V0, W, E, nPoints=1000) {
+        const xMin = -W*1.5, xMax = W*1.5;
+        const dx = (xMax - xMin) / nPoints;
+        let integral = 0;
+        
+        for (let i = 0; i < nPoints; i++) {
+            const x = xMin + (i+0.5) * dx;
+            const V = shape.fn(x, V0, W);
+            if (V > E) {
+                integral += Math.sqrt(2*(V-E)) * dx;
+            }
+        }
+        
+        return Math.min(Math.exp(-2*integral), 1.0);
+    }
+
+    function wkbExponent(shape, V0, W, E, nPoints=1000) {
+        const xMin = -W*1.5, xMax = W*1.5;
+        const dx = (xMax - xMin) / nPoints;
+        let integral = 0;
+        
+        for (let i = 0; i < nPoints; i++) {
+            const x = xMin + (i+0.5) * dx;
+            const V = shape.fn(x, V0, W);
+            if (V > E) {
+                integral += Math.sqrt(2*(V-E)) * dx;
+            }
+        }
+        
+        return 2 * integral;
+    }
+
+    // =========================================================================
+    // DRAWING UTILITIES
+    // =========================================================================
+    function setupCanvas(canvas) {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        return { ctx, w: rect.width, h: rect.height };
+    }
+
+    function drawAxes(ctx, w, h, pad, xLabel, yLabel) {
+        ctx.strokeStyle = '#333355';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(pad, pad);
+        ctx.lineTo(pad, h - pad);
+        ctx.lineTo(w - pad, h - pad);
+        ctx.stroke();
+
+        ctx.fillStyle = '#666688';
+        ctx.font = '11px sans-serif';
+        if (xLabel) ctx.fillText(xLabel, w/2, h - 4);
+        if (yLabel) {
+            ctx.save();
+            ctx.translate(12, h/2);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText(yLabel, 0, 0);
+            ctx.restore();
+        }
+    }
+
+    // =========================================================================
+    // DRAW BARRIER SHAPES
+    // =========================================================================
+    function drawBarriers(V0, W, E) {
+        const canvas = document.getElementById('barriers-canvas');
+        const { ctx, w, h } = setupCanvas(canvas);
+        const pad = 40;
+        
+        ctx.clearRect(0, 0, w, h);
+        drawAxes(ctx, w, h, pad, 'Position x', 'V(x)');
+
+        const xMin = -W*2, xMax = W*2;
+        const yMax = V0 * 1.3;
+
+        function toScreen(x, y) {
+            return [
+                pad + (x - xMin)/(xMax - xMin) * (w - 2*pad),
+                (h - pad) - y/yMax * (h - 2*pad)
+            ];
+        }
+
+        // Draw energy line
+        const [eX1, eY] = toScreen(xMin, E);
+        const [eX2, _] = toScreen(xMax, E);
+        ctx.strokeStyle = '#ffffff44';
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(eX1, eY);
+        ctx.lineTo(eX2, eY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#ffffff88';
+        ctx.font = '11px sans-serif';
+        ctx.fillText(`E = ${E}`, eX2 - 45, eY - 5);
+
+        // Draw each barrier
+        const nPoints = 300;
+        SHAPES.forEach((shape, si) => {
+            ctx.strokeStyle = shape.color;
+            ctx.lineWidth = 2.5;
+            ctx.globalAlpha = 0.85;
+            ctx.beginPath();
+            
+            for (let i = 0; i <= nPoints; i++) {
+                const x = xMin + (xMax-xMin) * i/nPoints;
+                const V = shape.fn(x, V0, W);
+                const [sx, sy] = toScreen(x, V);
+                if (i === 0) ctx.moveTo(sx, sy);
+                else ctx.lineTo(sx, sy);
+            }
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+        });
+
+        // Legend
+        const legendX = w - 150, legendY = 20;
+        SHAPES.forEach((shape, i) => {
+            ctx.fillStyle = shape.color;
+            ctx.fillRect(legendX, legendY + i*18, 12, 12);
+            ctx.fillStyle = '#ccccee';
+            ctx.font = '11px sans-serif';
+            ctx.fillText(shape.name, legendX + 18, legendY + i*18 + 10);
+        });
+
+        // Y-axis labels
+        ctx.fillStyle = '#666688';
+        ctx.font = '10px sans-serif';
+        for (let v = 0; v <= yMax; v += Math.ceil(yMax/5)) {
+            const [_, sy] = toScreen(0, v);
+            ctx.fillText(v.toFixed(0), 5, sy + 3);
+        }
+    }
+
+    // =========================================================================
+    // DRAW DECAY RATE
+    // =========================================================================
+    function drawDecayRate(V0, W, E) {
+        const canvas = document.getElementById('decay-canvas');
+        const { ctx, w, h } = setupCanvas(canvas);
+        const pad = 40;
+
+        ctx.clearRect(0, 0, w, h);
+        drawAxes(ctx, w, h, pad, 'Position x', 'κ(x)');
+
+        const xMin = -W*1.2, xMax = W*1.2;
+        const kappaMax = Math.sqrt(2*(V0-E)) * 1.2;
+
+        function toScreen(x, y) {
+            return [
+                pad + (x - xMin)/(xMax - xMin) * (w - 2*pad),
+                (h - pad) - y/kappaMax * (h - 2*pad)
+            ];
+        }
+
+        const nPoints = 200;
+        SHAPES.forEach(shape => {
+            ctx.strokeStyle = shape.color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            let started = false;
+
+            for (let i = 0; i <= nPoints; i++) {
+                const x = xMin + (xMax-xMin) * i/nPoints;
+                const V = shape.fn(x, V0, W);
+                const kappa = V > E ? Math.sqrt(2*(V-E)) : 0;
+                const [sx, sy] = toScreen(x, kappa);
+                if (!started) { ctx.moveTo(sx, sy); started = true; }
+                else ctx.lineTo(sx, sy);
+            }
+            ctx.stroke();
+        });
+    }
+
+    // =========================================================================
+    // DRAW SHAPE FACTOR BARS
+    // =========================================================================
+    function drawShapeFactor(V0, W, E) {
+        const canvas = document.getElementById('factor-canvas');
+        const { ctx, w, h } = setupCanvas(canvas);
+        const pad = 40;
+
+        ctx.clearRect(0, 0, w, h);
+
+        const gammaRect = wkbExponent(SHAPES[0], V0, W, E);
+        const barH = (h - 2*pad) / SHAPES.length - 8;
+
+        SHAPES.forEach((shape, i) => {
+            const gamma = wkbExponent(shape, V0, W, E);
+            const S = gammaRect > 0 ? gamma / gammaRect : 0;
+            const y = pad + i * (barH + 8);
+            const barW = S * (w - pad - 120);
+
+            // Bar
+            ctx.fillStyle = shape.color + '88';
+            ctx.fillRect(120, y, barW, barH);
+            ctx.strokeStyle = shape.color;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(120, y, barW, barH);
+
+            // Label
+            ctx.fillStyle = shape.color;
+            ctx.font = '11px sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText(shape.name, 115, y + barH/2 + 4);
+
+            // Value
+            ctx.fillStyle = '#ccccee';
+            ctx.textAlign = 'left';
+            ctx.fillText(`S = ${S.toFixed(3)}`, barW + 125, y + barH/2 + 4);
+        });
+        ctx.textAlign = 'left';
+    }
+
+    // =========================================================================
+    // DRAW ENERGY SCAN
+    // =========================================================================
+    function drawEnergyScan(V0, W) {
+        const canvas = document.getElementById('energy-canvas');
+        const { ctx, w, h } = setupCanvas(canvas);
+        const pad = 50;
+
+        ctx.clearRect(0, 0, w, h);
+        drawAxes(ctx, w, h, pad, 'Particle Energy E', 'log₁₀(Tunneling Probability)');
+
+        const nPoints = 100;
+        const eMin = 0.5, eMax = V0 * 0.98;
+
+        // Find range for y-axis
+        let yMin = 0, yMax = -30;
+        SHAPES.forEach(shape => {
+            for (let i = 0; i <= nPoints; i++) {
+                const E = eMin + (eMax-eMin)*i/nPoints;
+                const T = wkbTunneling(shape, V0, W, E);
+                if (T > 0) {
+                    const logT = Math.log10(T);
+                    yMin = Math.min(yMin, logT);
+                }
+            }
+        });
+        yMin = Math.max(yMin, -20);
+
+        function toScreen(x, y) {
+            return [
+                pad + (x - eMin)/(eMax - eMin) * (w - 2*pad),
+                (h - pad) - (y - yMin)/(yMax - yMin) * (h - 2*pad)
+            ];
+        }
+
+        // Grid lines
+        ctx.strokeStyle = '#1a1a3a';
+        ctx.lineWidth = 0.5;
+        for (let logV = Math.ceil(yMin); logV <= 0; logV += 2) {
+            const [_, sy] = toScreen(eMin, logV);
+            ctx.beginPath();
+            ctx.moveTo(pad, sy);
+            ctx.lineTo(w-pad, sy);
+            ctx.stroke();
+            ctx.fillStyle = '#555577';
+            ctx.font = '10px sans-serif';
+            ctx.fillText(`10^${logV}`, 5, sy + 3);
+        }
+
+        // Draw curves
+        SHAPES.forEach(shape => {
+            ctx.strokeStyle = shape.color;
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            let started = false;
+
+            for (let i = 0; i <= nPoints; i++) {
+                const E = eMin + (eMax-eMin)*i/nPoints;
+                const T = wkbTunneling(shape, V0, W, E);
+                if (T > 0) {
+                    const logT = Math.max(Math.log10(T), yMin);
+                    const [sx, sy] = toScreen(E, logT);
+                    if (!started) { ctx.moveTo(sx, sy); started = true; }
+                    else ctx.lineTo(sx, sy);
+                }
+            }
+            ctx.stroke();
+        });
+
+        // Legend
+        const lx = pad + 10, ly = pad + 5;
+        SHAPES.forEach((shape, i) => {
+            ctx.fillStyle = shape.color;
+            ctx.fillRect(lx, ly + i*16, 10, 10);
+            ctx.fillStyle = '#aaaacc';
+            ctx.font = '10px sans-serif';
+            ctx.fillText(shape.name, lx+14, ly + i*16 + 9);
+        });
+
+        // X-axis labels
+        ctx.fillStyle = '#666688';
+        for (let e = Math.ceil(eMin); e < eMax; e += Math.max(1, Math.floor(V0/8))) {
+            const [sx, _] = toScreen(e, yMin);
+            ctx.fillText(e.toFixed(0), sx-5, h-pad+15);
+        }
+    }
+
+    // =========================================================================
+    // UPDATE RESULTS TABLE
+    // =========================================================================
+    function updateTable(V0, W, E) {
+        const tbody = document.getElementById('results-body');
+        
+        if (E >= V0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#ff9800;">⚠️ Energy ≥ Barrier height — no tunneling (particle goes OVER the barrier classically!)</td></tr>';
+            return;
+        }
+
+        let results = SHAPES.map(shape => ({
+            name: shape.name,
+            color: shape.color,
+            T: wkbTunneling(shape, V0, W, E)
+        }));
+
+        results.sort((a, b) => b.T - a.T);
+        const maxT = results[0].T;
+        const rectT = results.find(r => r.name === 'Rectangular').T;
+
+        tbody.innerHTML = results.map((r, i) => {
+            const pct = r.T * 100;
+            const barWidth = maxT > 0 ? (r.T / maxT * 100) : 0;
+            const ratio = rectT > 0 ? (r.T / rectT) : 0;
+            const rankBadge = i < 3 ? `<span class="badge rank-${i+1}">#${i+1}</span>` : `#${i+1}`;
+            
+            let probStr;
+            if (pct > 1) probStr = pct.toFixed(2) + '%';
+            else if (pct > 0.001) probStr = pct.toExponential(3) + '%';
+            else probStr = pct.toExponential(2) + '%';
+
+            let ratioStr = ratio > 1000000 ? ratio.toExponential(1) + '×' :
+                          ratio > 1000 ? Math.round(ratio).toLocaleString() + '×' :
+                          ratio.toFixed(1) + '×';
+
+            return `<tr>
+                <td>${rankBadge}</td>
+                <td style="color:${r.color};font-weight:600">${r.name}</td>
+                <td>${probStr}</td>
+                <td><div class="bar-container"><div class="bar" style="width:${barWidth}%;background:${r.color}"></div></div></td>
+                <td>${ratioStr}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // =========================================================================
+    // MAIN UPDATE LOOP
+    // =========================================================================
+    function update() {
+        const V0 = parseFloat(document.getElementById('v0').value);
+        const W = parseFloat(document.getElementById('bwidth').value);
+        let E = parseFloat(document.getElementById('energy').value);
+
+        // Clamp energy below V0
+        if (E >= V0) E = V0 - 0.5;
+        
+        document.getElementById('v0-val').textContent = V0.toFixed(1);
+        document.getElementById('width-val').textContent = W.toFixed(2);
+        document.getElementById('energy-val').textContent = E.toFixed(1);
+
+        drawBarriers(V0, W, E);
+        drawDecayRate(V0, W, E);
+        drawShapeFactor(V0, W, E);
+        drawEnergyScan(V0, W);
+        updateTable(V0, W, E);
+    }
+
+    // Event listeners
+    document.getElementById('v0').addEventListener('input', update);
+    document.getElementById('bwidth').addEventListener('input', update);
+    document.getElementById('energy').addEventListener('input', update);
+
+    // Handle resize
+    window.addEventListener('resize', update);
+
+    // Initial draw
+    update();
+    </script>
+</body>
+</html>

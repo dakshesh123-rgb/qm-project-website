@@ -121,6 +121,7 @@
 
         canvas {
             width: 100%;
+            height: 250px;
             border-radius: 8px;
             background: #0a0a18;
         }
@@ -541,7 +542,7 @@
         const eMin = 0.5, eMax = V0 * 0.98;
 
         // Find range for y-axis
-        let yMin = 0, yMax = -30;
+        let yMin = 0, yMax = 0;
         SHAPES.forEach(shape => {
             for (let i = 0; i <= nPoints; i++) {
                 const E = eMin + (eMax-eMin)*i/nPoints;

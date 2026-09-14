@@ -4,38 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quantum Leakage Optimization Dashboard</title>
-    <!-- We use Chart.js from a CDN because it's lightweight and perfect for rapid prototyping -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1e1e24;
-            color: #f5f5f5;
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #000000;
+            color: #e0e0e0;
             margin: 0;
-            padding: 20px;
+            padding: 40px 20px;
+            font-weight: 300;
         }
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            background-color: #2b2b36;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background-color: #080808;
+            padding: 40px;
+            border-radius: 4px;
+            border: 1px solid #222222;
         }
         h1 {
             text-align: center;
-            color: #4da8da;
-            margin-bottom: 5px;
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-size: 24px;
+            font-weight: 500;
+            letter-spacing: -0.5px;
         }
         p.subtitle {
             text-align: center;
-            color: #a0a0a0;
-            margin-bottom: 30px;
-            font-size: 1.1em;
+            color: #888888;
+            margin-bottom: 40px;
+            font-size: 14px;
         }
         .chart-container {
             position: relative;
-            height: 600px;
+            height: 500px;
             width: 100%;
         }
     </style>
@@ -44,7 +48,7 @@
 
 <div class="container">
     <h1>Quantum Leakage Optimization</h1>
-    <p class="subtitle">Log(Transmission Probability) vs. Barrier Width for Sub-5nm Architectures</p>
+    <p class="subtitle">Transmission Probability vs. Barrier Width for Sub-5nm Architectures</p>
     
     <div class="chart-container">
         <canvas id="tunnelingChart"></canvas>
@@ -52,8 +56,6 @@
 </div>
 
 <script>
-    // To prevent browser CORS (Cross-Origin Resource Sharing) security errors when opening local files 
-    // directly without a web server, I embedded the JSON data directly into the Javascript.
     const rawData = {
   "Rectangular": [-0.836,-1.075,-1.317,-1.561,-1.806,-2.051,-2.297,-2.542,-2.788,-3.034,-3.280,-3.526,-3.772,-4.018,-4.264,-4.509,-4.755,-5.001,-5.247,-5.493,-5.739,-5.985,-6.231,-6.477,-6.723,-6.969,-7.215,-7.461,-7.707,-7.953,-8.198,-8.444,-8.690,-8.936,-9.182,-9.428,-9.674,-9.920,-10.166,-10.412,-10.658,-10.904,-11.150,-11.395,-11.641,-11.887],
   "Parabolic": [-0.464,-0.618,-0.778,-0.943,-1.111,-1.281,-1.452,-1.624,-1.796,-1.969,-2.143,-2.317,-2.491,-2.665,-2.840,-3.014,-3.189,-3.364,-3.539,-3.715,-3.890,-4.065,-4.241,-4.416,-4.592,-4.767,-4.943,-5.119,-5.295,-5.470,-5.646,-5.822,-5.998,-6.174,-6.350,-6.526,-6.702,-6.878,-7.054,-7.230,-7.406,-7.582,-7.758,-7.934,-8.110,-8.286],
@@ -64,56 +66,61 @@
     };
 
     const ctx = document.getElementById('tunnelingChart').getContext('2d');
-    
-    // Formatting the widths strictly to 1 decimal place for the X-axis
     const formattedWidths = rawData.widths.map(w => w.toFixed(1));
+    const getT = (logArray) => logArray.map(val => Math.pow(10, val));
 
-    const chart = new Chart(ctx, {
+    Chart.defaults.color = '#888888';
+    Chart.defaults.font.family = 'Inter';
+
+    new Chart(ctx, {
         type: 'line',
         data: {
             labels: formattedWidths,
             datasets: [
                 {
                     label: 'Rectangular (Baseline)',
-                    data: rawData.Rectangular,
-                    borderColor: '#ff4c4c', // Red
-                    backgroundColor: 'rgba(255, 76, 76, 0.1)',
-                    borderWidth: 3,
+                    data: getT(rawData.Rectangular),
+                    borderColor: '#555555',
+                    borderWidth: 2,
                     fill: false,
-                    tension: 0.1
+                    tension: 0.1,
+                    pointRadius: 0
                 },
                 {
                     label: 'Gaussian',
-                    data: rawData.Gaussian,
-                    borderColor: '#4da8da', // Blue
+                    data: getT(rawData.Gaussian),
+                    borderColor: '#3b82f6',
                     borderWidth: 2,
                     fill: false,
-                    tension: 0.4
+                    tension: 0.4,
+                    pointRadius: 0
                 },
                 {
                     label: 'Parabolic',
-                    data: rawData.Parabolic,
-                    borderColor: '#ffcc00', // Yellow
+                    data: getT(rawData.Parabolic),
+                    borderColor: '#a3a3a3',
                     borderWidth: 2,
                     fill: false,
-                    tension: 0.4
+                    tension: 0.4,
+                    pointRadius: 0
                 },
                 {
                     label: 'Triangular',
-                    data: rawData.Triangular,
-                    borderColor: '#99cc33', // Green
+                    data: getT(rawData.Triangular),
+                    borderColor: '#10b981',
                     borderWidth: 2,
                     fill: false,
-                    tension: 0.4
+                    tension: 0.4,
+                    pointRadius: 0
                 },
                 {
                     label: 'Exponential (Max Leakage)',
-                    data: rawData.Exponential,
-                    borderColor: '#cc66ff', // Purple
-                    borderWidth: 3,
-                    borderDash: [5, 5],
+                    data: getT(rawData.Exponential),
+                    borderColor: '#f59e0b',
+                    borderWidth: 2,
                     fill: false,
-                    tension: 0.4
+                    tension: 0.4,
+                    pointRadius: 0
                 }
             ]
         },
@@ -121,14 +128,8 @@
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                title: {
-                    display: true,
-                    text: 'Quantum Tunneling Probability vs. Barrier Width',
-                    color: '#f5f5f5',
-                    font: { size: 18 }
-                },
                 legend: {
-                    labels: { color: '#f5f5f5', font: { size: 14 } }
+                    labels: { color: '#cccccc', usePointStyle: true, boxWidth: 8 }
                 },
                 tooltip: {
                     mode: 'index',
@@ -140,21 +141,19 @@
                     title: {
                         display: true,
                         text: 'Barrier Width (W)',
-                        color: '#a0a0a0',
-                        font: { size: 14 }
+                        color: '#888888'
                     },
-                    ticks: { color: '#a0a0a0' },
-                    grid: { color: '#3b3b4a' }
+                    grid: { color: '#1a1a1a' }
                 },
                 y: {
+                    type: 'logarithmic',
+                    min: 1e-12,
                     title: {
                         display: true,
-                        text: 'Log10(Transmission Probability T)',
-                        color: '#a0a0a0',
-                        font: { size: 14 }
+                        text: 'Transmission Probability (T)',
+                        color: '#888888'
                     },
-                    ticks: { color: '#a0a0a0' },
-                    grid: { color: '#3b3b4a' }
+                    grid: { color: '#1a1a1a' }
                 }
             }
         }
